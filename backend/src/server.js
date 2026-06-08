@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+import path from "path";
 
 import express from "express";
 import notesRoutes from "./routes/notesRoutes.js";
@@ -9,14 +10,18 @@ import { connectDB } from "./config/db.js";
 import rateLimiter from "./middleware/rateLimiter.js";
 
 const app = express();
-app.use(cors({
+
+if(process.env.NODE_ENV != "production"){
+    app.use(cors({
     origin: "http://localhost:5173", // Allow requests from this origin
 }));
+}
+
 
 
  // Debugging line to check the value of MONGO_URI
 
-
+const __dirname = path.resolve()
 
 app.use(express.json());
 
@@ -28,6 +33,15 @@ app.use((req,res,next)=>{
 })
 
 app.use("/api/notes",notesRoutes);
+if(process.env.NODE_ENV === "production"){
+  app.use(express.static(path.join(__dirname,"../frontend/dist")))
+
+app.get("*",(req,res)=>{
+    res.sendFile(path.join(__dirname,"../frontend,dist,index.html"))
+})
+}
+
+
 const PORT = process.env.PORT || 5001;
 
 
