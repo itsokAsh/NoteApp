@@ -1,0 +1,92 @@
+# Notes App
+
+A simple full-stack notes application with an Express + MongoDB backend and a React + Vite frontend. The app supports creating, reading, updating and deleting notes, and includes request rate limiting using Upstash (Redis).
+
+Short description
+- A lightweight notes service exposing a REST API at `/api/notes` and a React UI to manage notes.
+
+Key features
+- RESTful API for notes (CRUD).
+- Rate limiting backed by Upstash Redis.
+- CORS configured for the local frontend (http://localhost:5173).
+
+Architecture
+- Backend: Node.js, Express, Mongoose (MongoDB), Upstash rate limiter.
+- Frontend: React + Vite, Axios for API calls, Tailwind/DaisyUI for styles.
+
+Getting started (development)
+
+Prerequisites
+- Node.js (v18+ recommended)
+- A MongoDB connection string (set `MONGO_URI`)
+- Upstash Redis credentials (optional; used by rate limiter)
+
+Backend
+1. Change to the backend folder:
+
+```
+cd backend
+```
+
+2. Install dependencies:
+
+```
+npm install
+```
+
+3. Create a `.env` file in `backend` with at least:
+
+```
+MONGO_URI=your_mongodb_connection_string
+PORT=5001
+# Upstash will use environment vars expected by @upstash/redis (e.g. UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN)
+```
+
+4. Run the backend in development:
+
+```
+npm run dev
+```
+
+The server listens by default on the port from `PORT` (fallback 5001) and mounts the notes routes at `/api/notes`.
+
+Frontend
+1. Change to the frontend folder:
+
+```
+cd frontend
+```
+
+2. Install dependencies and run the dev server:
+
+```
+npm install
+npm run dev
+```
+
+The frontend dev server runs on Vite's default port (`http://localhost:5173`). The backend CORS is configured to allow this origin.
+
+API Endpoints
+- `GET /api/notes` — list all notes
+- `GET /api/notes/:id` — get a single note
+- `POST /api/notes` — create a new note
+- `PUT /api/notes/:id` — update a note
+- `DELETE /api/notes/:id` — delete a note
+
+Helpful files
+- `backend/src/server.js` — backend entrypoint and app configuration
+- `backend/src/routes/notesRoutes.js` — API routes
+- `backend/src/config/db.js` — MongoDB connection (uses `MONGO_URI`)
+- `backend/src/config/upstash.js` — rate limiter using Upstash Redis
+- `frontend/src` — React source code
+
+Notes on environment variables
+- `MONGO_URI`: MongoDB connection string used by Mongoose.
+- Upstash Redis: `@upstash/redis` reads connection info from environment variables (see Upstash docs; common vars include `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`).
+- `PORT`: optional backend port (defaults to `5001`).
+
+Contributing
+- Feel free to open issues or create PRs. Keep changes focused and include simple tests where applicable.
+
+License
+- MIT (or choose a license appropriate for your project).
