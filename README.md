@@ -68,6 +68,22 @@ npm run dev
 
 The frontend dev server runs on Vite's default port (`http://localhost:5173`). The backend CORS is configured to allow this origin.
 
+Deployment on Render
+1. Deploy the backend as a Web Service:
+   - Connect your GitHub repo
+   - Set environment variables in Render dashboard:
+     - `MONGO_URI`: Your MongoDB connection string
+     - `PORT`: 5001 (or leave auto)
+     - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`: Your Upstash credentials
+     - `FRONTEND_URL`: Your frontend Render URL (e.g., `https://my-frontend.onrender.com`)
+     - `NODE_ENV`: `production`
+   - Note the backend URL (e.g., `https://my-backend.onrender.com`)
+
+2. Deploy the frontend as a Static Site or Web Service:
+   - Connect your GitHub repo
+   - Add environment variable: `VITE_API_URL=https://my-backend.onrender.com/api`
+   - For Web Service: Build: `npm install && npm run build`, Start: (empty for static)
+
 API Endpoints
 - `GET /api/notes` — list all notes
 - `GET /api/notes/:id` — get a single note
@@ -94,6 +110,10 @@ Rate Limiting
 
 Troubleshooting
 - **429 "Too Many Requests"**: Wait a few seconds before retrying, or check that Upstash Redis credentials are correct.
+- **net::ERR_CONNECTION_REFUSED**: Backend is not running or frontend can't reach it. Check:
+  - Backend is running locally: `npm run dev` in `backend/`
+  - In production: Set `VITE_API_URL` on frontend and `FRONTEND_URL` on backend
+  - CORS is enabled: `frontend.onrender.com` must match `FRONTEND_URL` on backend
 - **Cannot connect to MongoDB**: Verify `MONGO_URI` is valid and your IP is whitelisted in MongoDB Atlas.
 
 Contributing

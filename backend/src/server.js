@@ -11,11 +11,12 @@ import rateLimiter from "./middleware/rateLimiter.js";
 
 const app = express();
 
-if(process.env.NODE_ENV != "production"){
-    app.use(cors({
-    origin: "http://localhost:5173", // Allow requests from this origin
-}));
-}
+// Configure CORS for both development and production
+const corsOptions = {
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true
+};
+app.use(cors(corsOptions));
 
 
 
