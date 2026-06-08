@@ -34,12 +34,14 @@ cd backend
 npm install
 ```
 
-3. Create a `.env` file in `backend` with at least:
+3. Create a `.env` file in `backend` (use `.env.example` as a template):
 
 ```
 MONGO_URI=your_mongodb_connection_string
 PORT=5001
-# Upstash will use environment vars expected by @upstash/redis (e.g. UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN)
+UPSTASH_REDIS_REST_URL=https://your-url.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your_token
+NODE_ENV=development
 ```
 
 4. Run the backend in development:
@@ -82,8 +84,17 @@ Helpful files
 
 Notes on environment variables
 - `MONGO_URI`: MongoDB connection string used by Mongoose.
-- Upstash Redis: `@upstash/redis` reads connection info from environment variables (see Upstash docs; common vars include `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`).
+- Upstash Redis: `@upstash/redis` reads connection info from environment variables (`UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`).
 - `PORT`: optional backend port (defaults to `5001`).
+
+Rate Limiting
+- Per-IP sliding window: 100 requests per 20 seconds
+- Applied only to `/api/notes` routes
+- If Upstash is unavailable, requests are allowed (fail-open behavior)
+
+Troubleshooting
+- **429 "Too Many Requests"**: Wait a few seconds before retrying, or check that Upstash Redis credentials are correct.
+- **Cannot connect to MongoDB**: Verify `MONGO_URI` is valid and your IP is whitelisted in MongoDB Atlas.
 
 Contributing
 - Feel free to open issues or create PRs. Keep changes focused and include simple tests where applicable.

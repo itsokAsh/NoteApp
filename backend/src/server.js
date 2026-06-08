@@ -25,14 +25,13 @@ const __dirname = path.resolve()
 
 app.use(express.json());
 
-app.use(rateLimiter)
-
 app.use((req,res,next)=>{
     console.log(`Req method: ${req.method} & Req URL: ${req.url}`); // Debugging line to check incoming requests
     next();
 })
 
-app.use("/api/notes",notesRoutes);
+// Apply rate limiter only to API routes
+app.use("/api/notes", rateLimiter, notesRoutes);
 if(process.env.NODE_ENV === "production"){
   app.use(express.static(path.join(__dirname,"../frontend/dist")))
 

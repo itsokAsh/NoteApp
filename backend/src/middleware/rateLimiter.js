@@ -2,7 +2,9 @@ import ratelimit from "../config/upstash.js";
 
 const rateLimiter = async (req, res, next) => {
      try {
-        const {success} = await ratelimit.limit("my-limit-key")
+        // Use client IP as the rate limit key (per-IP limiting)
+        const clientIp = req.ip || req.connection.remoteAddress || "unknown";
+        const {success} = await ratelimit.limit(clientIp);
 
         if(!success){
             return res.status(429).json({ message: "Too many requests, please try again later." });
@@ -10,7 +12,9 @@ const rateLimiter = async (req, res, next) => {
         next();
      } catch (error) {
         console.error("Error in rate limiter middleware:", error);
-        next(error); // Pass the error to the next middleware (error handler)
+        // On connection error, allow the request (fail-open) to prevent total service failure
+        console.warn("Rate limiter unavailable, allowing request");
+        next();
      }
 }
 
